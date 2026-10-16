@@ -1,0 +1,23 @@
+name: Build and tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v4
+      - name: Configure project
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+      - name: Build project
+        run: cmake --build build --config Debug --parallel 2
+      - name: Run tests
+        run: ctest --test-dir build -C Debug --output-on-failure
